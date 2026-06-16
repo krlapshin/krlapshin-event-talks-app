@@ -1302,3 +1302,268 @@ button {
         max-height: 90vh;
     }
 }
+
+/* ==========================================================================
+   THEME TOGGLE WIDGET
+   ========================================================================== */
+.theme-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.theme-icon {
+    font-size: 0.85rem;
+    transition: color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.theme-icon-sun  { color: #fbbf24; opacity: 1; }
+.theme-icon-moon { color: var(--color-text-muted); opacity: 0.5; }
+
+/* Track */
+.theme-toggle-track {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 100px;
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.theme-toggle-track:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Thumb */
+.theme-toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    background: var(--color-text-primary);
+    border-radius: 50%;
+    transition: transform var(--transition-normal), background var(--transition-fast);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+}
+
+/* Checked state — thumb slides right */
+#theme-toggle-input:checked ~ .theme-toggle-thumb {
+    transform: translateX(18px);
+}
+
+/* Swap icon emphasis when light mode is active */
+body.light-mode .theme-icon-sun  { color: #f59e0b; opacity: 0.45; }
+body.light-mode .theme-icon-moon { color: #6366f1; opacity: 1; }
+body.light-mode .theme-toggle-track {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+body.light-mode .theme-toggle-thumb {
+    background: #6366f1;
+}
+
+/* ==========================================================================
+   LIGHT MODE  — root variable overrides applied to body.light-mode
+   Every colour token from :root is re-declared here so the swap is instant
+   and driven purely by a single class toggle on <body>.
+   ========================================================================== */
+body.light-mode {
+    /* Backgrounds */
+    --color-bg:          #f1f5f9;
+    --color-card-bg:     rgba(255, 255, 255, 0.80);
+    --color-card-border: rgba(0, 0, 0, 0.08);
+    --color-card-hover-border: rgba(99, 102, 241, 0.45);
+
+    /* Typography */
+    --color-text-primary:   #0f172a;
+    --color-text-secondary: #475569;
+    --color-text-muted:     #94a3b8;
+
+    /* Accent colours */
+    --color-primary:     #4f46e5;   /* Indigo — pops on white */
+    --color-primary-rgb: 79, 70, 229;
+    --color-secondary:   #7c3aed;
+
+    /* Shadows (stronger on light so cards lift off the bg) */
+    --shadow-sm: 0 2px 8px -1px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 16px -6px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
+
+    background-color: var(--color-bg);
+    color:            var(--color-text-primary);
+
+    /* Smooth full-page colour transition */
+    transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* Glow orbs are too distracting on a white page — soften them */
+body.light-mode .glow-orb { opacity: 0.06; }
+
+/* Page background */
+body.light-mode .app-container { /* inherits var(--color-bg) */ }
+
+/* Header brand gradient on light bg */
+body.light-mode .brand h1 {
+    background: linear-gradient(to right, #0f172a 30%, #4f46e5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+body.light-mode .brand h1 span {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Logo */
+body.light-mode .logo-wrapper {
+    box-shadow: 0 4px 20px rgba(79, 70, 229, 0.35);
+}
+
+/* Sync status pill */
+body.light-mode .sync-status {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.08);
+    color: var(--color-text-secondary);
+}
+
+/* Controls card */
+body.light-mode .controls-card {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Search input */
+body.light-mode #search-input {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(0, 0, 0, 0.12);
+    color: var(--color-text-primary);
+}
+body.light-mode #search-input:focus {
+    border-color: var(--color-primary);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+body.light-mode #search-input::placeholder { color: #94a3b8; }
+
+/* Filter chips */
+body.light-mode .chip {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--color-text-secondary);
+}
+body.light-mode .chip:hover,
+body.light-mode .chip.active {
+    background: rgba(79, 70, 229, 0.08);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* Sort toggle */
+body.light-mode .sort-toggle-group {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+body.light-mode .sort-btn.active {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--color-text-primary);
+}
+
+/* Update cards */
+body.light-mode .update-card {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-sm);
+}
+body.light-mode .update-card:hover {
+    border-color: var(--color-card-hover-border);
+    box-shadow: var(--shadow-md);
+}
+body.light-mode .update-card.selected {
+    background: rgba(79, 70, 229, 0.04);
+    border-color: var(--color-primary);
+}
+
+/* Card body links */
+body.light-mode .card-body a { color: var(--color-primary); }
+
+/* Date group separator */
+body.light-mode .date-group-line {
+    background: linear-gradient(to right, rgba(0,0,0,0.12), rgba(0,0,0,0.02));
+}
+
+/* Refresh button on light */
+body.light-mode .btn-refresh {
+    background: linear-gradient(135deg, rgba(79,70,229,0.08), rgba(124,58,237,0.08));
+    border-color: rgba(79, 70, 229, 0.25);
+    color: var(--color-primary);
+}
+body.light-mode .btn-refresh:hover {
+    background: linear-gradient(135deg, rgba(79,70,229,0.16), rgba(124,58,237,0.16));
+    border-color: var(--color-primary);
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.2);
+}
+
+/* Secondary button on light */
+body.light-mode .btn-secondary {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.12);
+    color: var(--color-text-secondary);
+}
+body.light-mode .btn-secondary:hover {
+    background: rgba(0, 0, 0, 0.09);
+    border-color: rgba(0, 0, 0, 0.2);
+    color: var(--color-text-primary);
+}
+
+/* Card copy/tweet buttons */
+body.light-mode .btn-card-copy {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--color-text-secondary);
+}
+body.light-mode .btn-card-copy:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--color-text-primary);
+}
+
+/* Footer */
+body.light-mode .app-footer-bar {
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Custom scrollbar on light */
+body.light-mode ::-webkit-scrollbar-track { background: rgba(241,245,249,0.5); }
+body.light-mode ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-color: #f1f5f9; }
+body.light-mode ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.28); }
+
+/* Modal on light */
+body.light-mode .modal-overlay { background: rgba(241,245,249,0.7); }
+body.light-mode .modal-card {
+    background: #ffffff;
+    border-color: rgba(0,0,0,0.1);
+}
+body.light-mode .modal-header { border-color: rgba(0,0,0,0.08); }
+body.light-mode .source-update-preview { background: rgba(0,0,0,0.03); }
+body.light-mode .textarea-wrapper {
+    background: rgba(0,0,0,0.03);
+    border-color: rgba(0,0,0,0.12);
+}
+body.light-mode #tweet-textarea { color: var(--color-text-primary); }
+body.light-mode .progress-ring__circle-bg { stroke: rgba(0,0,0,0.08); }
+body.light-mode .btn-primary-x {
+    background: #0f172a;
+    color: #ffffff;
+}
+body.light-mode .btn-primary-x:hover { background: #1e293b; }
+
+/* Toast on light */
+body.light-mode .toast {
+    background: #ffffff;
+    border-color: rgba(0,0,0,0.1);
+}
+

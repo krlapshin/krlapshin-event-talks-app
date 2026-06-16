@@ -36,6 +36,17 @@
                 </div>
                 <div class="refresh-controls">
                     <span id="sync-status" class="sync-status">Loading feed...</span>
+
+                    <!-- Light / Dark mode toggle -->
+                    <div class="theme-toggle-wrapper" title="Toggle light / dark mode">
+                        <i class="fa-solid fa-sun theme-icon theme-icon-sun"></i>
+                        <label class="theme-toggle-track" for="theme-toggle-input">
+                            <input type="checkbox" id="theme-toggle-input" hidden>
+                            <span class="theme-toggle-thumb"></span>
+                        </label>
+                        <i class="fa-solid fa-moon theme-icon theme-icon-moon"></i>
+                    </div>
+
                     <button id="btn-export-csv" class="btn-secondary" title="Export current view to CSV" style="display: none;">
                         <i class="fa-solid fa-file-csv"></i>
                         <span>Export CSV</span>

@@ -46,12 +46,25 @@ const btnSendTweet = document.getElementById('btn-send-tweet');
 const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toast-message');
 
+// Theme toggle
+const themeToggleInput = document.getElementById('theme-toggle-input');
+
 /* ==========================================================================
    INITIALIZATION & EVENT LISTENERS
    ========================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
-    // Fetch initial data
-    fetchReleaseNotes(false);
+    // Restore saved theme preference
+    if (localStorage.getItem('bq-theme') === 'light') {
+        document.body.classList.add('light-mode');
+        themeToggleInput.checked = true;
+    }
+
+    // Theme toggle
+    themeToggleInput.addEventListener('change', () => {
+        const isLight = themeToggleInput.checked;
+        document.body.classList.toggle('light-mode', isLight);
+        localStorage.setItem('bq-theme', isLight ? 'light' : 'dark');
+    });
 
     // Event Listeners
     btnRefresh.addEventListener('click', () => fetchReleaseNotes(true));
@@ -85,6 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
     tweetTextarea.addEventListener('input', updateCharCount);
     btnCopyTweet.addEventListener('click', copyTweetToClipboard);
     btnSendTweet.addEventListener('click', postTweet);
+
+    // Fetch initial data
+    fetchReleaseNotes(false);
 });
 
 /* ==========================================================================
