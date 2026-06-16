@@ -12,6 +12,7 @@ let selectedUpdateId = null;
 // DOM Elements
 const btnRefresh = document.getElementById('btn-refresh');
 const refreshIcon = btnRefresh.querySelector('.refresh-icon');
+const btnExportCsv = document.getElementById('btn-export-csv');
 const syncStatus = document.getElementById('sync-status');
 const searchInput = document.getElementById('search-input');
 const btnClearSearch = document.getElementById('btn-clear-search');
@@ -55,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event Listeners
     btnRefresh.addEventListener('click', () => fetchReleaseNotes(true));
     btnRetry.addEventListener('click', () => fetchReleaseNotes(true));
+    btnExportCsv.addEventListener('click', exportToCsv);
     
     // Search
     searchInput.addEventListener('input', handleSearchInput);
@@ -92,6 +94,7 @@ async function fetchReleaseNotes(force = false) {
     showLoading(true);
     showError(false);
     showEmpty(false);
+    btnExportCsv.style.display = 'none';
     
     // Animate refresh icon
     refreshIcon.classList.add('spin');
@@ -115,6 +118,9 @@ async function fetchReleaseNotes(force = false) {
             const updateTime = new Date(result.last_updated * 1000);
             const formattedTime = updateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             syncStatus.textContent = `Synced: ${formattedTime}`;
+            
+            // Show export button if there are updates
+            btnExportCsv.style.display = allUpdates.length > 0 ? 'inline-flex' : 'none';
             
             // Apply filtering and sorting
             applyFiltersAndSort();
@@ -311,6 +317,10 @@ function renderFeed() {
                         </span>
                     </div>
                     <div class="card-actions">
+                        <button class="btn-card-copy" title="Copy update to clipboard">
+                            <i class="fa-regular fa-copy"></i>
+                            <span>Copy</span>
+                        </button>
                         <button class="btn-card-tweet" title="Tweet about this update">
                             <svg viewBox="0 0 24 24" width="14" height="14">
                                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
@@ -336,6 +346,12 @@ function renderFeed() {
                 </div>
             `;
             
+            // Copy button click handler
+            const btnCopy = card.querySelector('.btn-card-copy');
+            btnCopy.addEventListener('click', () => {
+                copyCardToClipboard(update);
+            });
+
             // Tweet button click handler
             const btnTweet = card.querySelector('.btn-card-tweet');
             btnTweet.addEventListener('click', () => {
@@ -553,4 +569,71 @@ function showToast(message, duration = 3000) {
             toast.style.display = 'none';
         }, 300); // match transition duration
     }, duration);
+}
+
+/* ==========================================================================
+   COPY TO CLIPBOARD (CARD)
+   ========================================================================== */
+function copyCardToClipboard(update) {
+    const lines = [
+        `[${update.type}] BigQuery Release Notes — ${update.date_formatted}`,
+        '',
+        update.content_text,
+    ];
+    if (update.link) {
+        lines.push('', `Source: ${update.link}`);
+    }
+    const text = lines.join('\n');
+
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            showToast('✅ Copied to clipboard!');
+        })
+        .catch(() => {
+            showToast('⚠️ Copy failed — please select manually.', 4000);
+        });
+}
+
+/* ==========================================================================
+   EXPORT TO CSV
+   ========================================================================== */
+function exportToCsv() {
+    if (filteredUpdates.length === 0) {
+        showToast('Nothing to export — adjust filters first.', 3500);
+        return;
+    }
+
+    // CSV columns
+    const headers = ['ID', 'Date', 'Type', 'Description', 'Source Link'];
+
+    const escapeCell = (value) => {
+        // Wrap in quotes and escape any internal double-quotes
+        const str = String(value ?? '').replace(/"/g, '""');
+        return `"${str}"`;
+    };
+
+    const rows = filteredUpdates.map(u => [
+        escapeCell(u.id),
+        escapeCell(u.date_formatted),
+        escapeCell(u.type),
+        escapeCell(u.content_text),
+        escapeCell(u.link),
+    ].join(','));
+
+    const csvContent = [headers.map(escapeCell).join(','), ...rows].join('\r\n');
+
+    // Trigger browser download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+
+    const timestamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    a.href     = url;
+    a.download = `bigquery-release-notes-${timestamp}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast(`📥 Exported ${filteredUpdates.length} update(s) to CSV!`);
 }

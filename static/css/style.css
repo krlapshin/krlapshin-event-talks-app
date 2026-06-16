@@ -834,6 +834,26 @@ button {
     transition: fill var(--transition-fast);
 }
 
+.btn-card-copy {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--color-text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn-card-copy:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-primary);
+    border-color: rgba(255, 255, 255, 0.20);
+    transform: translateY(-1px);
+}
+
 /* Select Checkbox */
 .card-select-btn {
     background: rgba(255, 255, 255, 0.04);
